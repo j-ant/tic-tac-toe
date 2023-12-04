@@ -1,10 +1,10 @@
-class GameBoard {
+class TicTacToe {
   constructor() {
-    this._tiles = ['', '', '', '', '', '', '', '', ''];
+    this._board = ['', '', '', '', '', '', '', '', ''];
   }
 
-  getTiles() {
-    return this._tiles;
+  getBoard() {
+    return this._board;
   }
 }
 
@@ -16,6 +16,14 @@ class Player {
 }
 
 class GameController {
+  checkWinner(board) {
+    return (
+      this._checkRows(board) ||
+      this._checkColumns(board) ||
+      this._checkDiagonals(board)
+    );
+  }
+
   _checkRows(board) {
     const rowOne = [board[0], board[1], board[2]];
     const rowTwo = [board[3], board[4], board[5]];
@@ -40,9 +48,9 @@ class GameController {
   }
 
   _checkDiagonals(board) {
-    const diagonalOne = [board[0], board[4], board[8]];
-    const diagonalTwo = [board[2], board[4], board[6]];
-    return this._checkTriplet(diagonalOne) || this._checkTriplet(diagonalTwo);
+    const diagonal = [board[0], board[4], board[8]];
+    const antiDiagonal = [board[2], board[4], board[6]];
+    return this._checkTriplet(diagonal) || this._checkTriplet(antiDiagonal);
   }
 
   _checkTriplet(array) {
@@ -51,3 +59,8 @@ class GameController {
     );
   }
 }
+
+const main = () => {
+  const controller = new GameController();
+  const game = new TicTacToe();
+};
