@@ -1,66 +1,57 @@
-class TicTacToe {
-  constructor() {
-    this._board = ['', '', '', '', '', '', '', '', ''];
-  }
+'use strict';
 
-  getBoard() {
-    return this._board;
-  }
-}
+const Player = (marker) => {
+  const getMarker = () => marker;
+  return { getMarker };
+};
 
-class Player {
-  constructor(name, marker) {
-    this._name = name;
-    this._marker = marker;
-  }
-}
+const GameBoard = (() => {
+  let board = ['X', 'X', 'X', '', '', '', '', '', ''];
 
-class GameController {
-  checkWinner(board) {
-    return (
-      this._checkRows(board) ||
-      this._checkColumns(board) ||
-      this._checkDiagonals(board)
-    );
-  }
+  const getBoard = () => board;
 
-  _checkRows(board) {
+  const setTileValue = (index, marker) => {
+    board[index] = marker;
+  };
+
+  const resetBoard = () => {
+    board = ['', '', '', '', '', '', '', '', ''];
+  };
+
+  return { getBoard, setTileValue, resetBoard };
+})();
+
+const GameController = (() => {
+  const checkWinner = (board) =>
+    checkRows(board) || checkColumns(board) || checkDiagonals(board);
+
+  const checkRows = (board) => {
     const rowOne = [board[0], board[1], board[2]];
     const rowTwo = [board[3], board[4], board[5]];
     const rowThree = [board[6], board[7], board[8]];
 
     return (
-      this._checkTriplet(rowOne) ||
-      this._checkTriplet(rowTwo) ||
-      this._checkTriplet(rowThree)
+      checkTriplet(rowOne) || checkTriplet(rowTwo) || checkTriplet(rowThree)
     );
-  }
+  };
 
-  _checkColumns(board) {
+  const checkColumns = (board) => {
     const colOne = [board[0], board[3], board[6]];
     const colTwo = [board[1], board[4], board[7]];
     const colThree = [board[2], board[5], board[8]];
     return (
-      this._checkTriplet(colOne) ||
-      this._checkTriplet(colTwo) ||
-      this._checkTriplet(colThree)
+      checkTriplet(colOne) || checkTriplet(colTwo) || checkTriplet(colThree)
     );
-  }
+  };
 
-  _checkDiagonals(board) {
+  const checkDiagonals = (board) => {
     const diagonal = [board[0], board[4], board[8]];
     const antiDiagonal = [board[2], board[4], board[6]];
-    return this._checkTriplet(diagonal) || this._checkTriplet(antiDiagonal);
-  }
+    return checkTriplet(diagonal) || checkTriplet(antiDiagonal);
+  };
 
-  _checkTriplet(array) {
-    return (
-      array.every((tile) => tile === 'X') || array.every((tile) => tile === 'O')
-    );
-  }
-}
+  const checkTriplet = (array) =>
+    array.every((tile) => tile === 'X') || array.every((tile) => tile === 'O');
 
-const main = () => {
-  const controller = new GameController();
-  const game = new TicTacToe();
-};
+  return { checkWinner };
+})();
