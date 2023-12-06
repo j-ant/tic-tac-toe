@@ -1,16 +1,11 @@
 'use strict';
 
-const Player = (marker) => {
-  const getMarker = () => marker;
-  return { getMarker };
-};
-
 const GameBoard = (() => {
-  let board = ['X', 'X', 'X', '', '', '', '', '', ''];
+  let board = ['', '', '', '', '', '', '', '', ''];
 
   const getBoard = () => board;
 
-  const setTileValue = (index, marker) => {
+  const setElementValue = (index, marker) => {
     board[index] = marker;
   };
 
@@ -18,40 +13,99 @@ const GameBoard = (() => {
     board = ['', '', '', '', '', '', '', '', ''];
   };
 
-  return { getBoard, setTileValue, resetBoard };
+  return { getBoard, setElementValue, resetBoard };
 })();
 
 const GameController = (() => {
-  const checkWinner = (board) =>
+  let currentPlayer;
+  let turnCount = 0;
+
+  const checkWinner = (board = GameBoard.getBoard()) =>
     checkRows(board) || checkColumns(board) || checkDiagonals(board);
 
-  const checkRows = (board) => {
-    const rowOne = [board[0], board[1], board[2]];
-    const rowTwo = [board[3], board[4], board[5]];
-    const rowThree = [board[6], board[7], board[8]];
+  const checkRows = (board) =>
+    [0, 3, 6].some((start) => checkTriplet(board.slice(start, start + 3)));
 
-    return (
-      checkTriplet(rowOne) || checkTriplet(rowTwo) || checkTriplet(rowThree)
+  const checkColumns = (board) =>
+    [0, 1, 2].some((start) =>
+      checkTriplet([board[start], board[start + 3], board[start + 6]])
     );
-  };
 
-  const checkColumns = (board) => {
-    const colOne = [board[0], board[3], board[6]];
-    const colTwo = [board[1], board[4], board[7]];
-    const colThree = [board[2], board[5], board[8]];
-    return (
-      checkTriplet(colOne) || checkTriplet(colTwo) || checkTriplet(colThree)
-    );
-  };
-
-  const checkDiagonals = (board) => {
-    const diagonal = [board[0], board[4], board[8]];
-    const antiDiagonal = [board[2], board[4], board[6]];
-    return checkTriplet(diagonal) || checkTriplet(antiDiagonal);
-  };
+  const checkDiagonals = (board) =>
+    checkTriplet([board[0], board[4], board[8]]) ||
+    checkTriplet([board[2], board[4], board[6]]);
 
   const checkTriplet = (array) =>
     array.every((tile) => tile === 'X') || array.every((tile) => tile === 'O');
 
-  return { checkWinner };
+  const getCurrentPlayer = () => {
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    return currentPlayer;
+  };
+
+  const playTurn = (index, marker) => {
+    GameBoard.setElementValue(index, marker);
+
+    if (checkWinner()) {
+      DisplayController.endGameResult(currentPlayer, false);
+      DisplayController.disableTiles();
+    } else if (turnCount === 8) {
+      DisplayController.endGameResult(currentPlayer, true);
+      DisplayController.disableTiles();
+    }
+
+    turnCount++;
+  };
+
+  const newGame = () => {
+    GameBoard.resetBoard();
+    currentPlayer = '';
+    turnCount = 0;
+  };
+
+  return { playTurn, getCurrentPlayer, newGame };
+})();
+
+const DisplayController = (() => {
+  const tiles = document.querySelectorAll('.tile');
+  const resetBtn = document.getElementById('reset');
+  const resultMessage = document.getElementById('message');
+  const board = document.getElementById('gameboard');
+
+  const setTileValue = (e) => {
+    const player = GameController.getCurrentPlayer();
+    e.target.textContent = player;
+    GameController.playTurn(e.target.dataset.index, player);
+    e.target.disabled = true;
+  };
+
+  const resetBoard = () => {
+    tiles.forEach((tile) => {
+      tile.textContent = '';
+      tile.disabled = false;
+    });
+    resultMessage.classList.add('hidden');
+    board.style.filter = 'blur(0px)';
+    GameController.newGame();
+  };
+
+  const endGameResult = (player, isDraw) => {
+    resultMessage.textContent = isDraw ? "It's a draw!" : `${player} Wins!`;
+    resultMessage.classList.remove('hidden');
+    board.style.filter = 'blur(8px)';
+  };
+
+  tiles.forEach((tile) => {
+    tile.addEventListener('click', setTileValue);
+  });
+
+  const disableTiles = () => {
+    tiles.forEach((tile) => {
+      tile.disabled = true;
+    });
+  };
+
+  resetBtn.addEventListener('click', resetBoard);
+
+  return { endGameResult, disableTiles };
 })();

@@ -9,22 +9,23 @@
   <body>
     <header>
       <h1>Tic-Tac-Toe</h1>
-      <div class="hello">HELLO</div>
     </header>
     <main>
-      <div class="gameboard">
-        <button class="tile" data-index="0">O</button>
+      <div id="message" class="hidden">X WINS</div>
+      <div id="gameboard">
+        <button class="tile" data-index="0"></button>
         <button class="tile" data-index="1"></button>
         <button class="tile" data-index="2"></button>
         <button class="tile" data-index="3"></button>
-        <button class="tile" data-index="4">X</button>
+        <button class="tile" data-index="4"></button>
         <button class="tile" data-index="5"></button>
         <button class="tile" data-index="6"></button>
         <button class="tile" data-index="7"></button>
         <button class="tile" data-index="8"></button>
       </div>
-    </main>
 
+      <button type="button" id="reset">New Game</button>
+    </main>
     <footer>Jeremiah</footer>
     <script src="index.js"></script>
   </body>
